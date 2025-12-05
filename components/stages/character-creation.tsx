@@ -151,7 +151,7 @@ export default function CharacterCreation({ language, onCharacterCreate, onBack,
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-indigo-100 via-purple-50 via-pink-50 to-orange-50 relative" style={{ paddingTop: '120px', paddingBottom: '120px' }}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 via-purple-50 via-pink-50 to-orange-50 relative" style={{ paddingTop: '120px', paddingBottom: '120px' }}>
       {/* 高级背景装饰 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
@@ -174,12 +174,12 @@ export default function CharacterCreation({ language, onCharacterCreate, onBack,
         position="bottom-right"
       /> */}
 
-      <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col">
         <div className="px-8 lg:px-12 py-4">
           <StageHeader stage={1} title="Create Your Character" onBack={onBack} />
         </div>
 
-        <div className="flex-1 grid lg:grid-cols-12 gap-6 px-8 lg:px-12 pb-6 overflow-hidden">
+        <div className="flex-1 grid lg:grid-cols-12 gap-6 px-8 lg:px-12 pb-6">
 
                  {/* 表单区域 */}
                  <div className="lg:col-span-5 space-y-3 overflow-y-auto">
@@ -287,10 +287,10 @@ export default function CharacterCreation({ language, onCharacterCreate, onBack,
           </div>
 
                  {/* 图片预览区域 - 右侧 */}
-                 <div className="lg:col-span-7 flex flex-col items-center justify-center">
+                 <div className="lg:col-span-7 flex flex-col items-center justify-start overflow-y-auto">
             {imageUrl ? (
-              <div className="w-full h-full flex flex-col items-center justify-center space-y-4">
-                <div className="relative group flex items-center justify-center max-w-md">
+              <div className="w-full flex flex-col items-center justify-start space-y-4 py-4">
+                <div className="relative group flex items-center justify-center max-w-md w-full">
                   <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-3xl blur-2xl opacity-30 group-hover:opacity-50 transition duration-300"></div>
                   <div className="relative bg-gradient-to-br from-white to-purple-50 rounded-3xl p-4 border-4 border-purple-200 shadow-2xl backdrop-blur-sm w-full">
                     <div className="flex items-center justify-between mb-3">
@@ -328,19 +328,42 @@ export default function CharacterCreation({ language, onCharacterCreate, onBack,
                     </div>
                   </div>
                 </div>
-                {/* 继续按钮 - 在图片下方 */}
-                <Button
-                  onClick={handleCreate}
-                  disabled={!canContinue}
-                  size="lg"
-                  className={`w-full max-w-md border-0 shadow-xl py-6 text-base font-bold ${
-                    canContinue
-                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white animate-pulse"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  }`}
-                >
-                  Continue to Plot →
-                </Button>
+                {/* 继续按钮 - 在图片下方，确保有足够的底部边距 */}
+                <div className="w-full max-w-md pb-4">
+                  <Button
+                    onClick={handleCreate}
+                    disabled={!canContinue}
+                    size="lg"
+                    className={`w-full border-0 shadow-xl py-6 text-base font-bold ${
+                      canContinue
+                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white animate-pulse"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
+                  >
+                    Continue to Plot →
+                  </Button>
+                </div>
+                {/* 重新生成图片按钮 */}
+                <div className="w-full max-w-md pb-4">
+                  <Button
+                    onClick={generateImage}
+                    disabled={isGenerating}
+                    variant="outline"
+                    className="w-full border-2 border-purple-300 shadow-lg py-4 text-sm font-bold text-purple-700 hover:bg-purple-50"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Regenerating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Regenerate Image
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center">
