@@ -11,14 +11,12 @@ const globalForPrisma = globalThis as unknown as {
 // 构建时如果 DATABASE_URL 不存在，使用占位符（仅用于生成 Prisma Client）
 const databaseUrl = process.env.DATABASE_URL || process.env.NEXT_PUBLIC_DATABASE_URL
 
-// 在生产环境中，如果没有 DATABASE_URL，应该抛出错误而不是使用占位符
-if (!databaseUrl && process.env.NODE_ENV === 'production') {
-  console.error('DATABASE_URL is not configured in production environment')
-}
-
-// 使用占位符仅用于开发环境的类型生成
+// 在生产环境中，如果没有 DATABASE_URL，使用占位符但会在实际使用时失败
+// 这样可以避免构建时错误，但在运行时会有明确的错误信息
 const finalDatabaseUrl = databaseUrl || 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
 
+// 创建 Prisma Client 实例
+// 注意：如果 DATABASE_URL 未配置，Prisma 会在首次查询时抛出错误
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
