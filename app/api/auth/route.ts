@@ -27,9 +27,32 @@ export async function POST(request: NextRequest) {
     }
 
     // 从数据库查询用户
-    const user = await prisma.user.findUnique({
-      where: { username },
-    })
+    // 如果数据库连接失败，Prisma 会抛出错误，会被下面的 catch 块捕获
+    let user
+    try {
+      user = await prisma.user.findUnique({
+        where: { username },
+      })
+    } catch (dbError) {
+      // 如果是数据库连接错误，提供更明确的错误信息
+      const dbErrorMessage = dbError instanceof Error ? dbError.message : String(dbError)
+      if (dbErrorMessage.includes('Can\'t reach database') || 
+          dbErrorMessage.includes('P1001') ||
+          dbErrorMessage.includes('connection') ||
+          dbErrorMessage.includes('placeholder')) {
+        console.error('Database connection failed:', dbErrorMessage)
+        return NextResponse.json(
+          { 
+            success: false, 
+            error: 'Database connection failed',
+            hint: 'Please check if DATABASE_URL is correctly configured in Vercel project settings.'
+          },
+          { status: 500 }
+        )
+      }
+      // 其他数据库错误，重新抛出以便被外层 catch 捕获
+      throw dbError
+    }
     
     if (user && user.password === password) {
       // 用户存在且密码正确
